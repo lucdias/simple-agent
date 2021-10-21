@@ -41,7 +41,8 @@ class Food():
             # endShape(CLOSE)
     
     def checkVehicle(self, pos):
-        return self.pos.x == pos.x and self.pos.y == pos.y:
+        d = self.position - pos
+        return d.mag() < 5
             
             
             
