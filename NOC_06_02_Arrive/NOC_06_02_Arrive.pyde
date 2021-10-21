@@ -9,12 +9,16 @@
 # See: http://www.red3d.com/cwr/
 
 from Vehicle import Vehicle
+from Food import Food
 
 def setup():
     global v
+    global food
+    global grid
     size(640, 360)
     v = Vehicle(width / 2, height / 2)
-
+    print(grid)
+    food = Food(50, 50)
 
 def draw():
     background(51)
@@ -28,6 +32,7 @@ def draw():
     ellipse(mouse.x, mouse.y, 48, 48)
 
     # Call the appropriate steering behaviors for our agents
-    v.arrive(mouse)
+    v.arrive(food.position)
     v.update()
     v.display()
+    food.display()
