@@ -62,29 +62,25 @@ def neighbors(i, j):
             ret.append((y, x))
     return ret
 
+                 
 def bfs(s, e):
-    parent = {}
-    frontier = []
-    frontier.append(s)
-    
-    while frontier:
+    if frontier:
         u = frontier.pop(0)
         i,j = u
         grid[i][j].visited = True
-        
+        grid[i][j].setColor(1, color(255,0,255))   
         if u == e:
             i,j = u
-            
+                
             path = backtrace(parent, s, e)
             for i,j in path:
                 grid[i][j].setColor(1, color(255,0,0))
-                grid[i][j].show()
-            
+                
             grid[i][j].setColor(1, color(0,255,0))
-            grid[i][j].show()
             print(path)
             print("chegou")
             return True
+                
         y,x = u
         for v in neighbors(y,x):
             i,j = v
@@ -93,10 +89,12 @@ def bfs(s, e):
                 frontier.append(v)
                 i,j = v
                 grid[i][j].setColor(1, color(0,0,255))
-                grid[i][j].show()
-                 
-    
-    
+                
+
+def printGrid(grid):
+    for spots in grid:
+        for spot in spots:
+            spot.show()    
 
 def setup():
     size(1000, 600)
@@ -104,24 +102,34 @@ def setup():
     global rows, cols
     global scaleX, scaleY
     global babaca
+    global frontier, parent, finish
+    global s, e
+    s = (0,0)
+    e = (49, 49)
+    finish = False
+    frontier = []
+    parent = {}
     babaca = False
     rows,cols = 100,100
     scaleX = width/cols
     scaleY = height/rows
-    
     #lines 
-    #cols
-    
+    #cols    
     grid = [[Spot(i, j) for j in range(cols)] for i in range(rows)]
     foodY, foodX = randint(0,rows-1), randint(0,cols-1)
     grid[foodY][foodX].food = True
-    print(neighbors(0,0))
+    frontier.append(s)
+    printGrid(grid)
     
+
 def draw():
-    global babaca
-    for spots in grid:
-        for spot in spots:
-            spot.show()
-    if not babaca:
-        babaca = bfs((0,0), (70,87))
+    global frontier, parent
+    global finish
     
+    if not finish:
+        finish = bfs((0,0), (49,49))
+            
+    background(0)
+    printGrid(grid)
+            
+        
