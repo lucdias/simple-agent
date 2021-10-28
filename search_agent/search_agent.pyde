@@ -89,7 +89,33 @@ def bfs(s, e):
                 frontier.append(v)
                 i,j = v
                 grid[i][j].setColor(1, color(0,0,255))
+
+def dfs(s, e):
+    if frontier:
+        u = frontier.pop(-1)
+        i,j = u
+        grid[i][j].visited = True
+        grid[i][j].setColor(1, color(255,0,255))   
+        if u == e:
+            i,j = u
                 
+            path = backtrace(parent, s, e)
+            for i,j in path:
+                grid[i][j].setColor(1, color(255,0,0))
+                
+            grid[i][j].setColor(1, color(0,255,0))
+            print(path)
+            print("chegou")
+            return True
+                
+        y,x = u
+        for v in neighbors(y,x):
+            i,j = v
+            if v not in frontier and not grid[i][j].visited:
+                parent[v] = u
+                frontier.append(v)
+                i,j = v
+                grid[i][j].setColor(1, color(0,0,255))
 
 def printGrid(grid):
     for spots in grid:
@@ -97,7 +123,7 @@ def printGrid(grid):
             spot.show()    
 
 def setup():
-    size(1000, 600)
+    size(400, 400)
     global grid
     global rows, cols
     global scaleX, scaleY
@@ -105,12 +131,12 @@ def setup():
     global frontier, parent, finish
     global s, e
     s = (0,0)
-    e = (49, 49)
+    e = (30, 49)
     finish = False
     frontier = []
     parent = {}
     babaca = False
-    rows,cols = 100,100
+    rows,cols = 20,20
     scaleX = width/cols
     scaleY = height/rows
     #lines 
@@ -127,7 +153,7 @@ def draw():
     global finish
     
     if not finish:
-        finish = bfs((0,0), (49,49))
+        finish = dfs((0,0), (15,9))
             
     background(0)
     printGrid(grid)
