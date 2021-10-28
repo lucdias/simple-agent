@@ -6,9 +6,10 @@ class Spot:
         self.i = i
         self.j = j
         self.cost = cost if randint(0,10) > 4 else randint(0,2)
-        self.wall = True if randint(0,10) < 2 else wall
+        self.wall = True if randint(0,10) < 1 else wall
         self.food = False
         self.c = 255
+        self.visited = False
         self.setColor(0)
         
     def setColor(self, stage, col=255):
@@ -41,7 +42,15 @@ class Spot:
         stroke(0)
         #print(scaleX, scaleY)
         rect(self.j*scaleX, self.i*scaleY, scaleX, scaleY)
-    
+
+
+def backtrace(parent, start, e):
+    path = [e]
+    while path[-1] != start:
+        print(path)
+        path.append(parent[path[-1]])
+    path.reverse()
+    return path   
 
 def neighbors(i, j):
     r = [-1,-1,-1, 0, 0, +1, +1, +1]
@@ -53,12 +62,50 @@ def neighbors(i, j):
             ret.append((y, x))
     return ret
 
+def bfs(s, e):
+    parent = {}
+    frontier = []
+    frontier.append(s)
+    
+    while frontier:
+        u = frontier.pop(0)
+        i,j = u
+        grid[i][j].visited = True
+        
+        if u == e:
+            i,j = u
+            
+            path = backtrace(parent, s, e)
+            for i,j in path:
+                grid[i][j].setColor(1, color(255,0,0))
+                grid[i][j].show()
+            
+            grid[i][j].setColor(1, color(0,255,0))
+            grid[i][j].show()
+            print(path)
+            print("chegou")
+            return True
+        y,x = u
+        for v in neighbors(y,x):
+            i,j = v
+            if v not in frontier and not grid[i][j].visited:
+                parent[v] = u
+                frontier.append(v)
+                i,j = v
+                grid[i][j].setColor(1, color(0,0,255))
+                grid[i][j].show()
+                 
+    
+    
+
 def setup():
-    size(640, 480)
+    size(1000, 600)
     global grid
     global rows, cols
     global scaleX, scaleY
-    rows,cols = 5,5
+    global babaca
+    babaca = False
+    rows,cols = 100,100
     scaleX = width/cols
     scaleY = height/rows
     
@@ -71,11 +118,10 @@ def setup():
     print(neighbors(0,0))
     
 def draw():
+    global babaca
     for spots in grid:
         for spot in spots:
             spot.show()
+    if not babaca:
+        babaca = bfs((0,0), (70,87))
     
-    n = neighbors(1,1)
-    for (i,j) in n:
-        grid[i][j].setColor(1, color(0,255,255))
-        grid[i][j].show()
