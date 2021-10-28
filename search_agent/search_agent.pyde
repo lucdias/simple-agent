@@ -1,6 +1,5 @@
 from random import randint
 
-
 class Spot:
     
     def __init__(self, i, j, cost=0, wall=False, food=False) :
@@ -9,18 +8,35 @@ class Spot:
         self.cost = cost if randint(0,10) > 4 else randint(0,2)
         self.wall = True if randint(0,10) < 2 else wall
         self.food = False
+        self.c = 255
+        self.setColor(0)
+        
+    def setColor(self, stage, col=255):
+        if stage == 0:
+            if self.food:
+                self.c = 50
+            elif self.wall:
+                self.c = 0
+            elif self.cost  == 0:
+                self.c = 255
+            elif self.cost == 1:
+                self.c = color(255,255,0)
+            elif self.cost == 2:
+                self.c = color(127,0,0)
+        else:
+            self.c = col
         
     def show(self):
         if self.food:
-            fill(50)
+            fill(self.c)
         elif self.wall:
-            fill(0)
+            fill(self.c)
         elif self.cost  == 0:
-            fill(255)
+            fill(self.c)
         elif self.cost == 1:
-            fill(color(255,255,0))
+            fill(self.c)
         elif self.cost == 2:
-            fill(color(127,0,0))
+            fill(self.c)
             
         stroke(0)
         #print(scaleX, scaleY)
@@ -33,7 +49,7 @@ def neighbors(i, j):
     ret = []
     for k in range(8):
         y, x = i+r[k], j+c[k]
-        if ( 0 <= y < rows) and ( 0 <= x < cols):
+        if ( 0 <= y < rows) and ( 0 <= x < cols) and not grid[y][x].wall:
             ret.append((y, x))
     return ret
 
@@ -59,3 +75,7 @@ def draw():
         for spot in spots:
             spot.show()
     
+    n = neighbors(1,1)
+    for (i,j) in n:
+        grid[i][j].setColor(1, color(0,255,255))
+        grid[i][j].show()
