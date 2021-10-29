@@ -4,10 +4,10 @@ import time
 
 class Spot:
     
-    def __init__(self, i, j, cost=0, wall=False, food=False) :
+    def __init__(self, i, j, cost=1, wall=False, food=False) :
         self.i = i
         self.j = j
-        self.cost = cost if randint(0,10) > 4 else randint(0,2)
+        self.cost = cost if randint(0,10) > 4 else randint(2,3)
         self.wall = True if randint(0,10) < 1 else wall
         self.food = food
         if self.food:
@@ -23,11 +23,11 @@ class Spot:
                 self.c = color(0,255,0)
             elif self.wall:
                 self.c = 0
-            elif self.cost  == 0:
+            elif self.cost  == 1:
                 self.c = 255
-            elif self.cost == 1:
-                self.c = color(255,255,0)
             elif self.cost == 2:
+                self.c = color(255,255,0)
+            elif self.cost == 3:
                 self.c = color(127,0,0)
         else:
             self.c = col
@@ -37,11 +37,11 @@ class Spot:
             fill(self.c)
         elif self.wall:
             fill(self.c)
-        elif self.cost  == 0:
-            fill(self.c)
-        elif self.cost == 1:
+        elif self.cost  == 1:
             fill(self.c)
         elif self.cost == 2:
+            fill(self.c)
+        elif self.cost == 3:
             fill(self.c)
             
         stroke(0)
@@ -266,13 +266,16 @@ def init(f):
     
 
 def setup():
-    size(600, 600)
+    global font, cnt
     global grid
     global rows, cols
     global scaleX, scaleY
     global frontier, frontier_cost, parent, finish, came_from, cost_so_far, walk
     global s, e
     global old
+    size(600, 600)
+    font = createFont("Arial", 16)
+    cnt = 0
     rows,cols = 40, 40
     scaleX = width/cols 
     scaleY = height/rows -2
@@ -296,9 +299,9 @@ def draw():
     global last
     global walk
     global old
-    
+    global font, cnt
     if not finish:
-        finish, path = aStar(s, e)
+        finish, path = custoso(s, e)
         if finish:
             walk = finish
             s = e
@@ -309,6 +312,7 @@ def draw():
         time.sleep(0.2)
         if len(path) == 0:
             walk = False
+            cnt += 1
     else:
         time.sleep(1)
         reset()
@@ -318,5 +322,8 @@ def draw():
         
     background(0)
     printGrid(grid)
+    fill(255)
+    textFont(font, 32)
+    text("Catched: {}".format(cnt),5,height-10)
             
         
