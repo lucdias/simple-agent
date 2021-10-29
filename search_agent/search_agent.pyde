@@ -1,4 +1,5 @@
 from random import randint
+import heapq
 
 class Spot:
     
@@ -89,6 +90,39 @@ def bfs(s, e):
                 frontier.append(v)
                 i,j = v
                 grid[i][j].setColor(1, color(0,0,255))
+                
+                
+def heuristic(a, b):
+   # Manhattan distance on a square grid
+   return abs(a[1] - b[1]) + abs(a[0] - b[0])
+                
+def greedy(s, e):
+    if frontier_cost:
+        c,u = frontier_cost.pop(0)
+        i,j = u
+        grid[i][j].visited = True
+        grid[i][j].setColor(1, color(255,0,255))   
+        if u == e:
+            i,j = u
+                
+            path = backtrace(parent, s, e)
+            for i,j in path:
+                grid[i][j].setColor(1, color(255,0,0))
+                
+            grid[i][j].setColor(1, color(0,255,0))
+            print(path)
+            print("chegou")
+            return True
+                
+        y,x = u
+        for v in neighbors(y,x):
+            i,j = v
+            if v not in came_from and not grid[i][j].visited:
+                priority = heuristic(e, v)
+                parent[v] = u
+                heapq.heappush(frontier_cost, (priority, v))
+                came_from[v] = u
+                grid[i][j].setColor(1, color(0,0,255))
 
 def dfs(s, e):
     if frontier:
@@ -123,20 +157,22 @@ def printGrid(grid):
             spot.show()    
 
 def setup():
-    size(400, 400)
+    size(600, 600)
     global grid
     global rows, cols
     global scaleX, scaleY
     global babaca
-    global frontier, parent, finish
+    global frontier, frontier_cost, parent, finish, came_from
     global s, e
     s = (0,0)
     e = (30, 49)
     finish = False
     frontier = []
+    frontier_cost = []
+    came_from = {}
     parent = {}
     babaca = False
-    rows,cols = 20,20
+    rows,cols = 40,40
     scaleX = width/cols
     scaleY = height/rows
     #lines 
@@ -145,6 +181,8 @@ def setup():
     foodY, foodX = randint(0,rows-1), randint(0,cols-1)
     grid[foodY][foodX].food = True
     frontier.append(s)
+    heapq.heappush(frontier_cost, (0,s))
+    came_from[s] = None
     printGrid(grid)
     
 
@@ -153,7 +191,7 @@ def draw():
     global finish
     
     if not finish:
-        finish = dfs((0,0), (15,9))
+        finish = greedy((0,0), (15,9))
             
     background(0)
     printGrid(grid)
